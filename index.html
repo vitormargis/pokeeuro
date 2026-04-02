@@ -70,44 +70,54 @@
 </body>
 </html>
 
-<script>    
-    const currency = window.location.href.includes('euro') ? 'EUR' : 'USD';
-    const currencyLabel = window.location.href.includes('euro') ? 'euro' : 'dolar';
-    const currencyAPI = `https://data.fixer.io/api/latest?access_key=4ca15fa4c688891571b7e929d7f4205c&format=1&base=${currency}`;
+<script>
+    const isEuro = window.location.href.includes('euro');
+    const currency = isEuro ? 'EUR' : 'USD';
+    const currencyLabel = isEuro ? 'euro' : 'dolar';
+    const currencyAPI = `https://api.frankfurter.app/latest?from=${currency}&to=BRL`;
 
-    fetch(currencyAPI).then(data => data.json()).then(currencies => {
-        const rate = currencies.rates.BRL;
-        const BRL = Math.round(rate * 100) / 100;
-        const BRLtoPokemon = BRL.toString().replace('.', '')
+    const pokedex = document.querySelector('.pokedex');
 
-        fetch(`https://pokeapi.co/api/v2/pokemon/${BRLtoPokemon}`).then(data => data.json()).then(pokemon => {
-            const pokemonImage = `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${
-                BRLtoPokemon.length === 2 ? '0' + BRLtoPokemon : BRLtoPokemon
-            }.png`;
-
-            document.querySelector('.pokedex img').setAttribute('src', pokemonImage);
-            document.querySelector('.pokedex p').append(`#${BRLtoPokemon} ${pokemon.name}`);
-            document.querySelector('title').innerHTML = `Poke${currencyLabel} - #${BRLtoPokemon} ${pokemon.name}`;
-
-            const title = document.createElement('meta');
-            title.setAttribute('property', 'og:title');
-            title.setAttribute('content', `Poke${currencyLabel}`);
-            document.getElementsByTagName('head')[0].appendChild(title);
-
-            const siteName = document.createElement('meta');
-            siteName.setAttribute('property', 'og:site_name');
-            siteName.setAttribute('content', `Poke${currencyLabel}`);
-            document.getElementsByTagName('head')[0].appendChild(siteName);
-
-            const description = document.createElement('meta');
-            description.setAttribute('property', 'og:description');
-            description.setAttribute('content', `#${BRLtoPokemon} ${pokemon.name.toUpperCase()}`);
-            document.getElementsByTagName('head')[0].appendChild(description);
-
-            const image = document.createElement('meta');
-            image.setAttribute('property', 'og:image');
-            image.setAttribute('content', pokemonImage);
-            document.getElementsByTagName('head')[0].appendChild(image);
+    fetch(currencyAPI)
+        .then(res => {
+            if (!res.ok) throw new Error('Currency fetch failed');
+            return res.json();
         })
-    })
+        .then(data => {
+            const rate = data.rates.BRL;
+            const BRL = Math.round(rate * 100) / 100;
+            const BRLtoPokemon = BRL.toString().replace('.', '');
+
+            return fetch(`https://pokeapi.co/api/v2/pokemon/${BRLtoPokemon}`)
+                .then(res => {
+                    if (!res.ok) throw new Error(`No Pokemon found for #${BRLtoPokemon}`);
+                    return res.json();
+                })
+                .then(pokemon => {
+                    const padded = BRLtoPokemon.padStart(3, '0');
+                    const pokemonImage = `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${padded}.png`;
+
+                    pokedex.querySelector('img').setAttribute('src', pokemonImage);
+                    pokedex.querySelector('p').textContent = `#${BRLtoPokemon} ${pokemon.name}`;
+                    document.querySelector('title').textContent = `Poke${currencyLabel} - #${BRLtoPokemon} ${pokemon.name}`;
+
+                    const metas = {
+                        'og:title': `Poke${currencyLabel}`,
+                        'og:site_name': `Poke${currencyLabel}`,
+                        'og:description': `#${BRLtoPokemon} ${pokemon.name.toUpperCase()}`,
+                        'og:image': pokemonImage,
+                    };
+                    const head = document.head;
+                    for (const [property, content] of Object.entries(metas)) {
+                        const meta = document.createElement('meta');
+                        meta.setAttribute('property', property);
+                        meta.setAttribute('content', content);
+                        head.appendChild(meta);
+                    }
+                });
+        })
+        .catch(err => {
+            pokedex.querySelector('p').textContent = 'Erro ao carregar. Tente novamente.';
+            console.error(err);
+        });
 </script>
