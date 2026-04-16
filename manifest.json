@@ -1,0 +1,23 @@
+{
+  "name": "Poke Currency",
+  "short_name": "PokeCurrency",
+  "description": "Which Pokemon matches today's exchange rate?",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#be2727",
+  "theme_color": "#be2727",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
