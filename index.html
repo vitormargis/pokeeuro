@@ -59,6 +59,27 @@
         font-family: Arial, Helvetica, sans-serif;
         margin: 0;
     }
+
+    footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        padding: 12px 0;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    footer a {
+        color: rgba(255, 255, 255, 0.85);
+        text-decoration: none;
+    }
+
+    footer a:hover {
+        color: #fff;
+        text-decoration: underline;
+    }
 </style>
 <body>
     <div class="logo"><img src="./pokedolar-logo.svg" alt=""></div>
@@ -66,11 +87,16 @@
         <img />
         <p></p>
     </div>
+    <footer>
+        &copy; <span id="year"></span> <a href="https://vitormargis.com" target="_blank" rel="noopener noreferrer">vitormargis.com</a>
+    </footer>
 
 </body>
 </html>
 
 <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
     const isEuro = window.location.href.includes('euro');
     const currency = isEuro ? 'eur' : 'usd';
     const currencyLabel = isEuro ? 'euro' : 'dolar';
