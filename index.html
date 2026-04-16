@@ -72,9 +72,9 @@
 
 <script>
     const isEuro = window.location.href.includes('euro');
-    const currency = isEuro ? 'EUR' : 'USD';
+    const currency = isEuro ? 'eur' : 'usd';
     const currencyLabel = isEuro ? 'euro' : 'dolar';
-    const currencyAPI = `https://api.frankfurter.app/latest?from=${currency}&to=BRL`;
+    const currencyAPI = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${currency}.min.json`;
 
     const pokedex = document.querySelector('.pokedex');
 
@@ -84,7 +84,7 @@
             return res.json();
         })
         .then(data => {
-            const rate = data.rates.BRL;
+            const rate = data[currency].brl;
             const BRL = Math.round(rate * 100) / 100;
             const BRLtoPokemon = BRL.toString().replace('.', '');
 
